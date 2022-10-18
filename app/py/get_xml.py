@@ -11,7 +11,6 @@ def get_urls(main_url: str, paths: list[str]) -> list[str]:
 
     for idx, path in enumerate(paths):
         urls.append(main_url + path)
-        print(urls[idx])
 
     return urls
 

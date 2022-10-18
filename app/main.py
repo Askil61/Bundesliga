@@ -1,4 +1,7 @@
 import os
+from typing import Any
+
+from py.write_file import write_xml_file
 from py.get_xml import UrlNotFound, get_xml, get_urls
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -17,7 +20,7 @@ def main():
 
     url: str | None = os.getenv("URL_BL")
     # holds xml data from urls
-    xml_data = {"highlights": BeautifulSoup(), "news": BeautifulSoup()}
+    xml_data = {"highlights": Any, "news": Any}
     xml_funcs = [get_highlights, get_news]
 
     if url is not None:
@@ -37,8 +40,11 @@ def main():
     print(xml_data)
 
 
-
     # write new structure to file
+    for cat in xml_data.keys():
+        ext = str(os.getenv("OUTPUT_FILE_EXT"))
+        path = str(os.getenv("PWD")) + "/" + str(os.getenv("OUTPUT_FOLDER"))
+        write_xml_file(cat,ext, path,xml_data[cat])
 
 if __name__ == '__main__':
     try:
