@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+import re
 from yattag.doc import Doc
 from yattag.indentation import indent
 
@@ -42,7 +42,11 @@ def get_news(items:list) -> list:
                 with tag("textmessage"):
                     text(item.find('description').string)
                 with tag("image", type="remotefile"):
-                    text(item.find("media:content", type="image/jpeg").get("url"))
+                    src = item.find("media:content", type="image/jpeg").get("url")
+                    sub = "ci16x9-w1024"
+                    regex = r"ci23x11-w780"
+                    result = re.sub(regex, sub, src, 1)
+                    text(result)
                 with tag("published", type="timestamp"):
                     text(item.find("pubDate").string)
                 with tag("source"):

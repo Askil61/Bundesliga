@@ -1,20 +1,22 @@
 import os
+from glob import glob
 from typing import Any
 
+from app.py.upload_2_sftp import upload_files
 from py.write_file import write_xml_file
 from py.get_xml import UrlNotFound, get_xml, get_urls
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from py.reconst_xml import get_highlights, get_news
 
 load_dotenv()
 
+
 class EnvNotFound(BaseException):
     e_message = ".env var not found or var in .env not found"
     ...
 
-def main():
 
+def main():
     # xml from web import
     # from https://www.welt.de/feeds/ooh/out-of-home/bundesliga/highlights
 
@@ -37,14 +39,20 @@ def main():
         items = xml_data[cat].find_all("item", limit=limit)
         xml_data[cat] = xml_funcs[idx](items)
 
-    print(xml_data)
-
 
     # write new structure to file
     for cat in xml_data.keys():
         ext = str(os.getenv("OUTPUT_FILE_EXT"))
         path = str(os.getenv("PWD")) + "/" + str(os.getenv("OUTPUT_FOLDER"))
-        write_xml_file(cat,ext, path,xml_data[cat])
+        write_xml_file(cat, ext, path, xml_data[cat])
+
+    # upload to server via sftp
+    file_paths = glob("out/*.xml")
+    if file_paths:
+        upload_files(file_paths)
+    else:
+        raise FileNotFoundError(f"no xml files for upload_2_sftp found: file_paths={file_paths}")
+
 
 if __name__ == '__main__':
     try:
